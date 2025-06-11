@@ -1,0 +1,4 @@
+python-socketio
+eventlet
+requests
+python-dotenv
