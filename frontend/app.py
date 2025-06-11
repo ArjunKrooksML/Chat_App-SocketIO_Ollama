@@ -57,7 +57,7 @@ while not st.session_state.msg_queue.empty():
         u = data.get('user', 'Anonymous')
         t = data.get('text', '')
         bot_name = data.get('bot_name', 'Mistral')
-        a = "👤" if u != bot_name else "🤖"
+        a = "User" if u != bot_name else "Mistral7"
         st.session_state.chat_messages.append({'u': u, 't': t, 'a': a})
         needs_rerun = True
     elif event_type in ["connect", "disconnect", "connect_error"]:
