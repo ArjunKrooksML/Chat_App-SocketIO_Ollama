@@ -6,11 +6,11 @@ import queue
 URL = "http://backend:5000"
 MSG_LIMIT = 100
 
-# --- This queue is the ONLY object shared between the main thread and the socket thread ---
+
 if 'msg_queue' not in st.session_state:
     st.session_state.msg_queue = queue.Queue()
 
-# --- Initialize client and session state variables ---
+
 if 'sio_client' not in st.session_state:
     st.session_state.sio_client = socketio.Client(reconnection_attempts=3, reconnection_delay=5)
 if 'user_name' not in st.session_state:
@@ -20,8 +20,7 @@ if 'chat_messages' not in st.session_state:
 
 sio = st.session_state.sio_client
 
-# --- Define Event Handlers as regular functions ---
-# These functions do NOT access st.session_state. They only use the queue.
+
 def handle_connect(q):
     print("Frontend: Connected to backend.")
     q.put({"event": "connect"})
@@ -38,7 +37,7 @@ def handle_message(q, data):
     print(f"Frontend: Received message: {data}")
     q.put({"event": "message", "data": data})
 
-# --- Register handlers only ONCE by using a session_state flag ---
+# Handling managers
 if 'handlers_registered' not in st.session_state:
     q = st.session_state.msg_queue
     sio.on('connect', lambda: handle_connect(q))
@@ -47,7 +46,7 @@ if 'handlers_registered' not in st.session_state:
     sio.on('message', lambda data: handle_message(q, data))
     st.session_state.handlers_registered = True
 
-# --- Process all events from the queue at the start of each script run ---
+#Queue events
 needs_rerun = False
 while not st.session_state.msg_queue.empty():
     msg = st.session_state.msg_queue.get_nowait()
@@ -67,7 +66,7 @@ while not st.session_state.msg_queue.empty():
 if needs_rerun:
     st.rerun()
 
-# --- UI Rendering Logic ---
+#UI
 st.set_page_config(page_title="LLM Chat", layout="wide")
 st.title("Chat with Mistral")
 
